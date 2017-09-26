@@ -21,7 +21,7 @@
 void PrintUsage()
 {
 	wprintf(L"Version 1.01 26/09/2017 pierrelc@microsoft.com\n");
-	wprintf(L"usage: getaddrinfoex <hostname> <servicename> <namespace>\n");
+	wprintf(L"usage: getaddrinfoex <hostname> <servicename> [namespace)\n");
 	wprintf(L"The getaddrinfo function provides protocol-independent translation \n");
 	wprintf(L"   from an ANSI host name to an address using the NS_DNS namespace\n");
 	wprintf(L"The GetAddrInfoEx function provides additional parameters\n");
@@ -79,11 +79,12 @@ int __cdecl wmain(int argc, wchar_t ** argv)
 	WCHAR GuidString[40] = { 0 };
 
 	// Validate the parameters
-	if ((argc != 4) || (argc != 3))
+	if ((argc != 4) && (argc != 3))
 	{
 		PrintUsage();
 		return 1;
 	}
+
 	// Initialize Winsock
 	iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (iResult != 0) {
@@ -98,7 +99,14 @@ int __cdecl wmain(int argc, wchar_t ** argv)
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
 
-	dwNamespace = (DWORD)_wtoi(argv[3]);
+	if (argc == 3)
+	{
+		dwNamespace = NS_DNS;
+	}
+	else if (argc == 4)
+	{
+		dwNamespace = (DWORD)_wtoi(argv[3]);
+	}
 
 	wprintf(L"Calling GetAddrInfoEx with following parameters:\n");
 	wprintf(L"\tName = %ws\n", argv[1]);
