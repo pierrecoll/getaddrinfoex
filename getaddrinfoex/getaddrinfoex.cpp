@@ -49,16 +49,29 @@ int __cdecl wmain(int argc, wchar_t ** argv)
 	WCHAR GuidString[40] = { 0 };
 
 	// Validate the parameters
-	if (argc != 4) {
-		wprintf(L"Version 1.0 31/03/2017 pierrelc@microsoft.com\n");
+	if (argc != 4) 
+	{
+		wprintf(L"Version 1.01 26/09/2017 pierrelc@microsoft.com\n");
 		wprintf(L"usage: getaddrinfoex <hostname> <servicename> <namespace>\n");
 		wprintf(L"getaddrinfoex provides protocol-independent translation\n");
 		wprintf(L"   from a host name to an IP address\n");
-		wprintf(L"getaddrinfo example usage\n");
-		wprintf(L"   getaddrinfo www.contoso.com 0 12\n");
+		wprintf(L"getaddrinfoex example usage\n");
+		wprintf(L"   getaddrinfoex www.contoso.com http 12\n");
 		wprintf(L"   looks up the www.contoso.com in the NS_DNS namespace\n");
-		wprintf(L"Open  \%WINDIR\%\\system32\\drivers\\etc\\services for servicename values\n");
+		wprintf(L"Open  \\%%WINDIR%%\\system32\\drivers\\etc\\services for servicename values\n");
 		wprintf(L"See https://msdn.microsoft.com/en-us/library/ms738518(v=vs.85).aspx for namespace values\n");		
+
+		wprintf(L"\tNS_ALL   \t 0\t All installed and active namespaces.\n\
+	NS_DNS     \t 12\t The domain name system(DNS) namespace.\n\
+	NS_NETBT   \t 13\t The NetBIOS over TCP / IP(NETBT) namespace.\n\
+	NS_WINS    \t 14\t The Windows Internet Naming Service(NS_WINS) namespace.\n\
+	NS_NLA     \t 15\t The network location awareness(NLA) namespace (XP and later).\n\
+	NS_BTH     \t 16\t The Bluetooth namespace (Vista and later).\n\
+	NS_NTDS    \t 32\t The Windows NT Directory Services(NS_NTDS) namespace.\n\
+	NS_EMAIL   \t 37\t The email namespace (Vista and later).\n\
+	NS_PNRPNAME\t 38\t The peer - to - peer namespace for a specific peer name (Vista and later).\n\
+	NS_PNRPCLOUD\t 39\t The peer - to - peer namespace for a collection of peer names (Vista and later).\n");
+
 		return 1;
 	}
 	// Initialize Winsock
