@@ -11,12 +11,47 @@
 #include <ws2tcpip.h>
 #include <objbase.h>
 #include <stdio.h>
+#include "time.h"
 
 // Need to link with Ws2_32.lib
 #pragma comment(lib, "ws2_32.lib")
 
 // Need to link with Ole32.lib to print GUID
 #pragma comment(lib, "ole32.lib")
+
+void print_time(void)
+{
+	struct tm newtime;
+	char am_pm[] = "AM";
+	__time64_t long_time;
+	char timebuf[26];
+	errno_t err;
+
+	// Get time as 64-bit integer.
+	_time64(&long_time);
+	// Convert to local time.
+	err = _localtime64_s(&newtime, &long_time);
+	if (err)
+	{
+		printf("Invalid argument to _localtime64_s.");
+		exit(1);
+	}
+	if (newtime.tm_hour > 12)        // Set up extension. 
+		strcpy_s(am_pm, sizeof(am_pm), "PM");
+	if (newtime.tm_hour > 12)        // Convert from 24-hour 
+		newtime.tm_hour -= 12;    // to 12-hour clock. 
+	if (newtime.tm_hour == 0)        // Set hour to 12 if midnight.
+		newtime.tm_hour = 12;
+
+	// Convert to an ASCII representation. 
+	err = asctime_s(timebuf, 26, &newtime);
+	if (err)
+	{
+		printf("Invalid argument to asctime_s.");
+		exit(1);
+	}
+	printf("(%.19s %s)\n", timebuf, am_pm);
+}
 
 void PrintUsage()
 {
@@ -101,6 +136,7 @@ int __cdecl wmain(int argc, wchar_t ** argv)
 
 	if (argc == 3)
 	{
+		//equivalent of getadrinfo
 		dwNamespace = NS_DNS;
 	}
 	else if (argc == 4)
@@ -108,6 +144,7 @@ int __cdecl wmain(int argc, wchar_t ** argv)
 		dwNamespace = (DWORD)_wtoi(argv[3]);
 	}
 
+	print_time();
 	wprintf(L"Calling GetAddrInfoEx with following parameters:\n");
 	wprintf(L"\tName = %ws\n", argv[1]);
 	wprintf(L"\tServiceName (or port) = %ws\n", argv[2]);
@@ -157,6 +194,7 @@ int __cdecl wmain(int argc, wchar_t ** argv)
 	dwRetval =
 		GetAddrInfoEx(argv[1], argv[2], dwNamespace, lpNspid, &hints, &result,
 			NULL, NULL, NULL, NULL);
+	print_time();
 	if (dwRetval != 0) {
 		wprintf(L"GetAddrInfoEx failed with error: %d\n", dwRetval);
 		WSACleanup();
@@ -164,7 +202,6 @@ int __cdecl wmain(int argc, wchar_t ** argv)
 	}
 
 	wprintf(L"GetAddrInfoEx returned success\n");
-
 	// Retrieve each address and print out the hex bytes
 	for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
 
